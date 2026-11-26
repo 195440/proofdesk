@@ -1,0 +1,34 @@
+# Optional: refresh the published site once a day with LIVE data.
+# Does nothing until the repository secret SOSOVALUE_API_KEY exists.
+name: refresh-live-site
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    env:
+      SOSOVALUE_API_KEY: ${{ secrets.SOSOVALUE_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: npm test
+        if: env.SOSOVALUE_API_KEY != ''
+        run: npm test
+      - name: collect, plan, verify, render
+        if: env.SOSOVALUE_API_KEY != ''
+        run: |
+          node src/cli.mjs run --site docs > /dev/null
+          node src/cli.mjs verify --snapshot docs/data/snapshot.json --plan docs/data/plan.json
+      - name: commit refreshed site
+        if: env.SOSOVALUE_API_KEY != ''
+        run: |
+          git config user.name "proofdesk-bot"
+          git config user.email "proofdesk-bot@users.noreply.github.com"
+          git add docs
+          git diff --cached --quiet || git commit -m "chore(site): refresh live snapshot" && git push

@@ -1,0 +1,17 @@
+name: ci
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+      - name: demo builds and its plan replays
+        run: |
+          node src/cli.mjs demo --out /tmp/pd-site > /dev/null
+          node src/cli.mjs verify --snapshot /tmp/pd-site/data/snapshot.json --plan /tmp/pd-site/data/plan.json

@@ -1,0 +1,19 @@
+{
+  "name": "proofdesk",
+  "version": "0.1.0",
+  "description": "A rebalancing desk where every trade carries receipts: SoSoValue signals, SoDEX depth checks, deterministic replay.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "proofdesk": "src/cli.mjs"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\"",
+    "demo": "node src/cli.mjs demo",
+    "collect": "node src/cli.mjs collect",
+    "run": "node src/cli.mjs run"
+  }
+}
